@@ -1,0 +1,22 @@
+CC=gcc
+OBJS=main.o renderer.o resources.o enemy.o game.o
+LDFLAGS= -lopengl32 -lglu32 -lglut32
+TARGET= spaceinv
+
+$(TARGET): $(OBJS)
+	$(CC) -o $@ $(OBJS) $(LDFLAGS) $(CFLAGS)
+
+main.o: resources.h renderer.h game.h
+
+renderer.o: renderer.h data.h resources.h game.h
+
+resources.o: resources.h data.h game.h
+
+enemy.o: data.h 
+
+game.o: game.h resources.h data.h 
+
+.PHONY: clean
+
+clean:
+	rm $(TARGET).exe $(OBJS)
