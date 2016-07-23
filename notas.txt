@@ -1,0 +1,13 @@
+La unidad de tiempo va a ser igual para el estado del juego y
+el estado grafico. La unidad de tiempo esta definida en una
+variable que se le va a pasar a glutTimerFunc en el main.c.
+
+La funcion que se le va a pasar a glutTimerFunc primero llama
+a update_gamestate, que actualiza el estado del juego, detectando
+colisiones, moviendo los objetos, y comprobando el final del juego
+, y update_graphicstate, que actualiza las animaciones del juego,
+finalmente llama a glutSwapBuffers() y se vuelve a registrar.
+
+Sugerencia:
+que la estructura SHOT no sea diferente de OBJECT, ya que tambien 
+es un objeto, y la animacion ya esta dentro de OBJECT_TYPE

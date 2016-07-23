@@ -1,0 +1,188 @@
+#######################
+# SPACE INVADERS FX   #
+# Ojeda & Duran Games #
+#######################
+
+=================================================================================
+Sobre este documento
+=================================================================================
+Este es el README del juego Space Invaders FX. Encontrara informacion acerca del
+objetivo del juego, sobre como ejecutarlo y como jugarlo. Para el desarrollador
+encontrara tambien algunos detalles acerca de la implementacion del juego.
+
+=================================================================================
+Objetivo del juego
+=================================================================================
+Maneja el lanzamisiles para proteger al planeta de la invasion extraterrestre.
+Tienes 3 vidas para salvar el mundo.
+
+Tienes que ir disparando a los marcianos mientras ellos van avanzando hacia la
+Tierra. El irlos destruyendo alarma a los sobrevivientes, que intentaran
+dirigirse hacia la Tierra con mayor velocidad. Cuando destruyas una oleada,
+tendras que destruir la siguiente, los cuales son mas agresivos y disparan
+mas.
+
+Te ayudaran en tu tarea 3 barreras defensivas que absorberan los disparos
+de los marcianos. Cada una de estas barreras esta en capacidad de absorber 3
+disparos antes de quedar inutilizadas. Ten cuidado con ellas porque tus propios
+misiles pueden pegarle a las defensas. Cuando los marcianos llegan al nivel de
+las defensas, ellos logran destruirlas completamente.
+
+Cada 1000 puntos se te premiara con una vida extra, para ayudarte en la cruzada
+contra los marcianos.
+
+=================================================================================
+Como compilar el juego
+=================================================================================
+Para compilar el juego, asegurese de tener en su directorio de instalacion los
+siguientes archivos:
+
+proyecto/data.h
+proyecto/enemy.c
+proyecto/game.c
+proyecto/game.h
+proyecto/main.c
+proyecto/Makefile
+proyecto/Makefile.win
+proyecto/README
+proyecto/renderer.c
+proyecto/renderer.h
+proyecto/resources.c
+proyecto/resources.h
+
+En Linux ejecute 'make' dentro del directorio 'proyecto' y se compilara el juego,
+cuyo ejecutable se llamara 'spaceinv'.
+
+Para comenzar el juego, ejecute el archivo 'spaceinv'.
+
+=================================================================================
+Como jugar
+=================================================================================
+Utilizando el teclado:
+
+Feclas derecha/izquierda - Mueven el lanzamisiles en la direccion deseada.
+Barra espaciadora        - El lanzamisil dispara una bala.
+
+Utilizando el mouse:
+Moviendo el mouse hacia la derecha/izquierda - Mueve el lanzamisiles en la
+                                               direccion deseada.
+Click el boton izquierdo                     - El lanzamisil dispara una bala.
+
+En general:
+h - Muestra la ventana de ayuda.
+p - Pausa el juego.
+f - Pone la ventana en pantalla completa.
+q o ESC - Sale del juego.
+
+CHEATS!:
+N - (N mayuscula) Pasa al siguiente nivel.
+U - (U mayuscula) Permite al lanzamisiles despegar del suelo volando con las
+    flechas arriba/abajo.
+
+=================================================================================
+Informacion para desarrolladores
+=================================================================================
+
+Estructura general del codigo:
+
+El codigo del juego esta dividido en 3 partes principales: la logica del juego,
+que se encarga de llevar el estado del juego, posiciones y deteccion de
+colisiones, el 'renderer', que se encarga de la mostrar graficamente el estado
+del juego, y el manejador de recursos, que se encarga de localizar en memoria
+los dibujos que muestra el renderer.
+
+La logica del juego:
+
+Durante intervalos regulares se ejecutan diversas tareas para mantener
+un juego con movimientos, colisiones e interaccion.
+Si el juego se encuentra pausado, en modo de ayuda o simplemente ha
+terminado porque el jugador perdio, no se realizan actualizaciones
+sobre el movimiento y colisiones de los objetos.
+Lo primero que se realiza es el movimiento de objetos en el mundo, es
+decir, naves, lanzamisiles, misiles y bombas. Esta actualizacion del
+mundo se realiza facilmente ya que todos los objetos del mundo son
+estructuras OBJECT o SHOT, las cuales tienen un parametro que indica
+su velocidad con respecto a los ejes x,y. Solamente los objetos que no
+han sido destruidos seran movidos. Para mejorar la eficiencia del
+programa, en este paso se generan las nuevas bombas que lanzan los
+marcianos.
+Despues se verifican las colisiones entre los objetos y los disparos.
+Unicamente se realizan los chequeos necesarios, evitando deteccion de
+colisiones con objetos que ya han sido destruidos.
+A continuacion se verifican colisiones entre objetos y los bordes del
+mundo, aplicando los ajustes necesarios si se llega a un borde, por
+ejemplo bajando un poco las naves alienigenas si ya alcanzan el borde
+derecho o izquierdo. Por ultimo, se chequean los disparos y bombas que
+han sido fallados para removerlos y dejar espacio para un proximo
+disparo o bomba enemiga.
+
+Deteccion de colisiones de disparos:
+
+Las colisiones de disparos que pueden ocurrir son de 3 clases: disparo
+contra marciano, disparo contra lanzamisiles, y disparo contra
+defensa.
+
+[Disparo contra marciano]
+
+La deteccion de colision entre un disparo y un marciano es
+aproximada. Simplemente se verifica si la posicion del disparo se
+encuentra dentro de un rectangulo. Este rectangulo es el area entre la
+esquina superior izquierda y la esquina superior derecha del
+marciano. La deteccion de colision de balas es rapida y se hace
+comparando unicamente con marcianos que son alcanzables. Un marciano
+que ya ha sido destruido no es candidato para esta deteccion.
+
+[Disparo contra lanzamisiles]
+
+La deteccion de colisiones entre un disparo y el lanzamisiles se hace de manera
+similar a la de los marcianos.
+
+[Disparo contra defensas]
+
+Para los disparos contra la defensa, se consideran primero los disparos de los
+marcianos, y luego los del lanzamisiles. Para cada uno, se divide el espacio
+vertical en 3 partes, del tope de la pantalla al tope de las defensas, el
+espacio entre el tope y el piso de la defensa, y el piso de la defensa y el
+piso de la pantalla. Si la bala se encuentra en el primer o tercer espacio se
+sabe que no puede colisionar contra la defensa y se continua el chequeo con la
+siguiente bala. De otra manera, el segundo espacio se divide en 7 partes,
+intercalando espacios vacios, con los espacios ocupados por las defensas. Si
+la bala esta entre los espacios vacios, no se sigue chequeando colision, y se
+continua con la siguiente bala.
+
+De otra manera, se sabe que la bala esta dentro de una defensa, y se procede
+a revisar el estado de la defensa. Si la defensa no tiene partes sin dañar,
+la defensa esta inutilizada, y no hay colision, si no, se procede a eliminar
+una parte de la defensa. Dependiendo de si el disparo viene de un marciano o
+del lanzamisiles, se elimina la parte que este mas arriba o mas abajo,
+respectivamente. Se elimina tambien el disparo y se chequea la proxima bala.
+
+Es de notar que para esa ultima seccion de codigo se utilizo un goto para salir
+de dos iteraciones anidadas, lo cual fue necesario ya que C no posee un labeled
+break como lo poseeria un lenguaje como Java.
+
+Renderer:
+
+El renderer se encarga de mostrar graficamente el estado del juego en la
+pantalla. Para poder dibujar sobre la pantalla, se consideraron las siguientes
+estructuras de soporte:
+
+OBJECTTYPE - Contiene la informacion de las animaciones que puede tener un
+             objeto OBJECT (el cual forma parte de la logica del juego), y
+             de la animacion que se muestra para ese tipo de objeto.
+ANIMATION  - Consiste en una serie de dibujos que se muestran secuencialmente
+             dando la impresion de movimiento.
+DRAWING    - Consiste en una lista de poligonos que el renderer debe dibujar
+             en el orden que se encuentren.
+POLYGON    - Un conjunto de puntos que forman una figura cerrada. Incluye el
+             color con el que debe dibujarse.
+POINT      - Una coordenada en un espacio bidimensional.
+COORDINATE - Un punto en un eje establecido en el contexto de una estructura.
+             Por ejemplo, existen dos COORDINATE dentro de un punto
+             representando el eje x y eje y.
+
+El renderer basicamente toma todas estas estructuras, y al final va dibujando
+poligonos cuyos vertices son los puntos que contiene. Vale la pena destacar
+que para hacer el codigo mas eficiente, si el poligono tiene cuatro lados,
+se asume como que el poligono es un rectangulo y se utilizan solamente su
+primer y tercer punto.
