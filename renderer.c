@@ -190,9 +190,10 @@ void drawDefenses(LEVEL level) {
     POLYGON *poly = *(nextdef->defenseDrawing->polygons);
     unsigned int j = 0;
 
-    glColor3f(defenseColors[nextdef->health-1][0],
-              defenseColors[nextdef->health-1][1],
-              defenseColors[nextdef->health-1][2]);
+    if (nextdef->health)
+        glColor3f(defenseColors[nextdef->health-1][0],
+                  defenseColors[nextdef->health-1][1],
+                  defenseColors[nextdef->health-1][2]);
 
     for (j = 0; j < 3; j++) {
       if (nextdef->parts[j] == 0) {
